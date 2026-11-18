@@ -112,17 +112,17 @@ function readProfile(){
   return P;
 }
 function onboarding(){
-  return `<div class="card hero"><h2>Hai să începem</h2><p class="mut" style="margin:0">Din datele de mai jos calculez câte calorii, proteine și fibre îți trebuie pe zi și îți fac un plan de sală.</p></div>
+  return `<div class="card hero"><h2>Profil</h2></div>
   <div class="card" style="display:flex;flex-direction:column;gap:12px">${profileForm(null)}
-  <button class="btn acc full" data-act="saveProfile">Calculează țintele</button></div>`;
+  <button class="btn acc full" data-act="saveProfile">Continuă</button></div>`;
 }
 function targetsCard(){
   const T=targets(),P=D.profile;const w=curWeight();
   let eta='';
   if(P.target&&P.goal!=='mentinere'){const diff=P.target-w;const rate=P.goal==='slabire'?-(Math.min(P.pace,w*0.01)):0.25;
     if(Math.sign(diff)===Math.sign(rate)&&Math.abs(diff)>0.2){const wk=Math.ceil(Math.abs(diff/rate));const dt=new Date();dt.setDate(dt.getDate()+wk*7);
-      eta=`<p class="small" style="margin:10px 0 0">De la ${fmt(w)} kg la ${fmt(P.target)} kg: cam <b>${wk} săptămâni</b>, pe la ${dt.getDate()} ${LUNI[dt.getMonth()]} ${dt.getFullYear()}, dacă ții ținta.</p>`}}
-  return `<div class="card"><h3>Țintele tale pe zi</h3>
+      eta=`<div class="kl" style="margin-top:8px">Ajungi la ${fmt(P.target)} kg<b>${dt.getDate()} ${LUNI[dt.getMonth()]} ${dt.getFullYear()}</b></div>`}}
+  return `<div class="card"><h3>Ținte zilnice</h3>
     <div class="res">
       <div class="stat"><div class="v">${T.kcal}</div><div class="k">calorii (kcal)</div></div>
       <div class="stat"><div class="v" style="color:var(--p)">${T.p} <small>g</small></div><div class="k">proteine</div></div>
@@ -130,16 +130,16 @@ function targetsCard(){
       <div class="stat"><div class="v" style="color:var(--f)">${T.f} <small>g</small></div><div class="k">grăsimi</div></div>
       <div class="stat"><div class="v" style="color:var(--fib)">${T.fib} <small>g</small></div><div class="k">fibre</div></div>
       <div class="stat"><div class="v" style="color:var(--water)">${fmt(T.water/1000)} <small>L</small></div><div class="k">apă</div></div></div>
-    <p class="small mut" style="margin:10px 0 0">Corpul tău arde cam ${T.tdee} kcal pe zi (${T.bmr} în repaus). ${P.goal==='slabire'?'Ținta are un deficit ca să slăbești în ritmul ales.':P.goal==='masa'?'Ținta are un mic surplus ca să construiești mușchi fără multă grăsime.':'Ținta te ține la aceeași greutate.'}</p>
+    <div class="kl" style="margin-top:12px">Consum zilnic estimat<b>${T.tdee} kcal</b></div>
     ${T.note?`<p class="small" style="margin:8px 0 0;color:var(--warn)">${T.note}</p>`:''}${eta}</div>`;
 }
 function vProfile(){
   $('#top').innerHTML=topbar('Profil');
-  return targetsCard()+`<div class="card" style="display:flex;flex-direction:column;gap:12px"><h3>Datele tale</h3>${profileForm(D.profile)}
-    <button class="btn acc full" data-act="saveProfile">Salvează și recalculează</button></div>
-    <div class="card"><h3>Copie de siguranță</h3><p class="small mut" style="margin:0 0 10px">Toate datele (mâncare, antrenamente, greutate) într-un fișier .json. Îl poți păstra sau muta pe alt telefon.</p>
+  return targetsCard()+`<div class="card" style="display:flex;flex-direction:column;gap:12px"><h3>Date</h3>${profileForm(D.profile)}
+    <button class="btn acc full" data-act="saveProfile">Salvează</button></div>
+    <div class="card"><h3>Copie de siguranță</h3>
     <div class="g2"><button class="btn" data-act="export">Exportă .json</button><button class="btn" data-act="import">Importă .json</button></div></div>
-    <p class="tiny mut" style="text-align:center;margin:4px 0 0">Valorile sunt estimări pentru oameni sănătoși. Dacă ai o problemă de sănătate, vorbește cu un medic sau nutriționist. Imaginile exercițiilor: Free Exercise DB (domeniu public).</p>`;
+`;
 }
 
 /* ================= AZI ================= */
@@ -158,20 +158,19 @@ function vAzi(){
     <div class="macros">${macroBar('Proteine',s.p,T.p,'var(--p)')}${macroBar('Carbo',s.c,T.c,'var(--c)')}${macroBar('Grăsimi',s.f,T.f,'var(--f)')}${macroBar('Fibre',s.fb,T.fib,'var(--fib)')}</div></div>
   <div class="card"><h3>Apă<span class="r">${fmt(d.water*0.25)} / ${fmt(T.water/1000)} L</span></h3>
     <div class="water">${Array.from({length:glasses},(_,i)=>`<button class="glass ${i<d.water?'on':''}" data-glass="${i}" aria-label="Pahar ${i+1}"></button>`).join('')}</div>
-    <p class="tiny mut" style="margin:8px 0 0">Un pahar = 250 ml. Atinge paharele pe care le-ai băut.</p></div>
+</div>
   <div class="card"><h3>Antrenament${doneToday?'<span class="r" style="color:var(--ok)">făcut azi ✓</span>':''}</h3>
-    ${D.active?`<p class="small mut" style="margin:0 0 10px">Ai un antrenament început.</p><button class="btn acc full" data-go="sala">Continuă antrenamentul</button>`
+    ${D.active?`<button class="btn acc full" data-go="sala">Continuă antrenamentul</button>`
       :`<div class="row" style="margin-bottom:10px"><div class="sp"><div style="font-weight:600">${esc(next.n)}</div><div class="small mut">${next.ex.length} exerciții · ${next.ex.map(e=>EXI[e.id].n).slice(0,3).map(esc).join(', ')}…</div></div></div>
        <button class="btn acc full" data-act="startPlan">Începe antrenamentul</button>`}</div>
-  ${k===today()&&!wToday?`<div class="card"><h3>Greutatea de azi</h3><div class="row"><input id="wq" type="number" inputmode="decimal" placeholder="kg, dimineața, după toaletă"><button class="btn acc" data-act="addWeightQ">Salvează</button></div></div>`:''}
-  <div class="card"><h3>Sfaturi pentru azi</h3>${tips(k).map(t=>`<div class="tip"><span class="d" style="background:${t[0]}"></span><div>${t[1]}</div></div>`).join('')}</div>`;
+  ${k===today()&&!wToday?`<div class="card"><h3>Greutatea de azi</h3><div class="row"><input id="wq" type="number" inputmode="decimal" placeholder="kg"><button class="btn acc" data-act="addWeightQ">Salvează</button></div></div>`:''}
+  <div class="card"><h3>Sfaturi</h3>${tips(k).slice(0,2).map(t=>`<div class="tip"><span class="d" style="background:${t[0]}"></span><div>${t[1]}</div></div>`).join('')}</div>`;
 }
 const BOOST={p:[['Brânză de vaci degresată',250],['Piept de pui, gătit',150],['Iaurt grecesc 2%',150],['Ton din conservă în apă',120],['Ou întreg',110],['Proteină whey (pudră)',30]],
   fb:[['Fasole boabe, fiartă',180],['Linte, fiartă',180],['Fulgi de ovăz',50],['Broccoli',150],['Pară',180],['Semințe de chia',12],['Pâine integrală',70]]};
 function tips(k){
   const T=targets(),s=sumDay(k),P=D.profile,out=[];const hour=k===today()?new Date().getHours():22;const eve=hour>=17;
   const food=n=>FOODS.find(f=>f[0]===n);
-  if(s.k===0)out.push(['var(--mut)',hour<11?'Începe ziua cu un mic dejun cu proteine: ouă, iaurt grecesc sau brânză de vaci te țin sătul până la prânz.':'Nu ai notat nimic încă azi. Notează mesele imediat după ce mănânci, e mai ușor decât seara.']);
   const pl=T.p-s.p;
   if(s.k>0&&pl>T.p*0.25){const sug=BOOST.p.slice(0,3).map(([n,g])=>{const f=food(n);return `${g} g ${n.toLowerCase().replace(', gătit','')} (${r0(f[2]*g/100)} g)`}).join(', ');
     out.push(['var(--p)',`Mai ai nevoie de <b>${r0(pl)} g proteine</b>${eve?' până diseară':' azi'}. Variante: ${sug}.`])}
@@ -182,7 +181,7 @@ function tips(k){
   const d=day(k),gl=Math.round(T.water/250);if(eve&&d.water<gl*0.6)out.push(['var(--water)',`Ai băut ${fmt(d.water*0.25)} L din ${fmt(T.water/1000)} L. Ține o sticlă de apă la îndemână.`]);
   // săptămâna
   const wk=D.workouts.filter(w=>w.finished&&w.date>addDays(k,-7)&&w.date<=k).length;
-  if(wk<(P.days||3))out.push(['var(--acc)',`Săptămâna asta: ${wk} din ${P.days} antrenamente. ${wk===0?'Primul e cel mai greu, după aceea devine obicei.':'Ești pe drumul bun.'}`]);
+  if(wk<(P.days||3))out.push(['var(--acc)',`Antrenamente săptămâna asta: ${wk} din ${P.days}`]);
   // trend greutate
   const tr=weightTrend();
   if(tr){if(P.goal==='slabire'&&tr.perWeek>-0.1&&tr.days>=14)out.push(['var(--warn)',`În ultimele 2 săptămâni greutatea nu a scăzut. Încearcă 150–200 kcal mai puțin pe zi sau 3.000 de pași în plus.`]);
@@ -229,13 +228,13 @@ function foodPickerHTML(){
   else list=all.filter(f=>f.cat===S.foodCat);
   const cats=[['recente','Recente'],['mele','Ale mele'],...FOODCAT];
   return `<div class="pn-h"><h2>${MEALS.find(m=>m[0]===FS.meal)[1]}</h2><button class="x" data-close>✕</button></div>
-  <div class="pn-b"><input id="fq" placeholder="Caută: ou, pui, orez, iaurt…" value="${esc(FS.q)}" autocomplete="off">
+  <div class="pn-b"><input id="fq" placeholder="Caută" value="${esc(FS.q)}" autocomplete="off">
     ${q?'':`<div class="chips">${cats.map(c=>`<button class="chip ${S.foodCat===c[0]?'on':''}" data-fcat="${c[0]}">${c[1]}</button>`).join('')}</div>`}
     <div class="fl">${list.length?list.map(f=>`<button class="fo" data-pickfood="${esc(f.n)}"><div class="nm"><div>${esc(f.n)}</div><div class="tiny mut">la 100 g: P ${fmt(f.p)} · C ${fmt(f.c)} · G ${fmt(f.f)} · fibre ${fmt(f.fb)}</div></div><span class="k">${r0(f.k)} kcal</span></button>`).join('')
-      :`<div class="empty small">${S.foodCat==='recente'&&!q?'Alimentele adăugate de tine apar aici.':S.foodCat==='mele'&&!q?'Nu ai alimente proprii încă.':'Nu am găsit în lista din aplicație.'}</div>`}</div>
-    ${q?`<button class="btn full" data-act="offSearch">${FS.loading?'Se caută…':'Caută „'+esc(FS.q)+'” online (produse din magazin)'}</button>`:''}
-    ${FS.online?FS.online.length?`<div class="sec-t">Online · Open Food Facts</div><div class="fl">${FS.online.map((f,i)=>`<button class="fo" data-pickonline="${i}"><div class="nm"><div>${esc(f.n)}</div><div class="tiny mut">la 100 g: P ${fmt(f.p)} · C ${fmt(f.c)} · G ${fmt(f.f)} · fibre ${fmt(f.fb)}</div></div><span class="k">${r0(f.k)} kcal</span></button>`).join('')}</div>`:'<div class="empty small">Nimic găsit online. Poți scrie codul de bare de pe ambalaj (cifrele) sau adaugi alimentul de mână.</div>':''}
-    <button class="btn ghost full" data-act="newCustom">+ Aliment nou (de pe etichetă)</button></div>`;
+      :`<div class="empty small">${q?'Niciun rezultat':'Nimic încă'}</div>`}</div>
+    ${q?`<button class="btn full" data-act="offSearch">${FS.loading?'Se caută…':'Caută online'}</button>`:''}
+    ${FS.online?FS.online.length?`<div class="sec-t">Online · Open Food Facts</div><div class="fl">${FS.online.map((f,i)=>`<button class="fo" data-pickonline="${i}"><div class="nm"><div>${esc(f.n)}</div><div class="tiny mut">la 100 g: P ${fmt(f.p)} · C ${fmt(f.c)} · G ${fmt(f.f)} · fibre ${fmt(f.fb)}</div></div><span class="k">${r0(f.k)} kcal</span></button>`).join('')}</div>`:'<div class="empty small">Niciun rezultat</div>':''}
+    <button class="btn ghost full" data-act="newCustom">+ Aliment nou</button></div>`;
 }
 const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
 async function offSearch(){
@@ -262,7 +261,7 @@ function gramsHTML(){
     <div class="chips">${portions.map(p=>`<button class="chip ${r0(g)===r0(p[1])?'on':''}" data-grams="${p[1]}">${esc(p[0])}</button>`).join('')}</div>
     <div class="mgrid"><div><b style="color:var(--p)" id="gp">${fmt(f.p*m)}</b><span>proteine g</span></div><div><b style="color:var(--c)" id="gc">${fmt(f.c*m)}</b><span>carbo g</span></div><div><b style="color:var(--f)" id="gf">${fmt(f.f*m)}</b><span>grăsimi g</span></div><div><b style="color:var(--fib)" id="gfb">${fmt(f.fb*m)}</b><span>fibre g</span></div></div>
     <div class="seg" id="mealSeg">${MEALS.map(x=>`<button data-meal="${x[0]}" class="${GQ.meal===x[0]?'on':''}">${x[1]}</button>`).join('')}</div>
-    <p class="tiny mut" style="margin:0">Valori aproximative. Pentru produse din magazin, eticheta e cea mai exactă.</p></div>
+</div>
   <div class="pn-f">${GQ.edit?`<button class="btn" data-act="delItem">Șterge</button>`:''}<button class="btn acc" style="flex:1" data-act="saveItem">${GQ.edit?'Salvează':'Adaugă'}</button></div>`;
 }
 function saveItem(){
@@ -277,12 +276,12 @@ function saveItem(){
 }
 function customHTML(){
   return `<div class="pn-h"><h2>Aliment nou</h2><button class="x" data-close>✕</button></div>
-  <div class="pn-b"><p class="small mut" style="margin:0">Copiezi valorile de pe etichetă, coloana „la 100 g”.</p>
+  <div class="pn-b"><div class="sec-t" style="margin-top:0">Valori la 100 g</div>
     <label class="f">Nume<input id="cn" placeholder="ex. Iaurt proteic vanilie"></label>
     <div class="g2"><label class="f">Calorii (kcal)<input id="ck" type="number" inputmode="decimal"></label><label class="f">Proteine (g)<input id="cp" type="number" inputmode="decimal"></label>
     <label class="f">Carbohidrați (g)<input id="cc" type="number" inputmode="decimal"></label><label class="f">Grăsimi (g)<input id="cf" type="number" inputmode="decimal"></label>
     <label class="f">Fibre (g)<input id="cfb" type="number" inputmode="decimal"></label><label class="f">O porție are (g)<input id="cpg" type="number" inputmode="decimal" placeholder="100"></label></div></div>
-  <div class="pn-f"><button class="btn acc full" data-act="saveCustom">Salvează și alege gramajul</button></div>`;
+  <div class="pn-f"><button class="btn acc full" data-act="saveCustom">Salvează</button></div>`;
 }
 
 /* ================= SALĂ ================= */
@@ -301,22 +300,22 @@ function vGym(){
   return `<div class="card"><h3>Planul tău<span class="r">${D.profile.days} zile/săpt.</span></h3>
     ${plan.map((p,j)=>`<div class="plan-day"><div class="sp"><div style="font-weight:600">${esc(p.n)} ${j===i?'<span class="target"> · urmează</span>':''}</div><div class="small mut">${p.ex.map(e=>`${esc(EXI[e.id].n)} ${e.s}×${esc(e.r)}`).join(' · ')}</div></div>
       <button class="btn sm ${j===i?'acc':''}" data-startday="${j}">Start</button></div>`).join('')}
-    ${D.profile.goal==='slabire'?'<p class="tiny mut" style="margin:10px 0 0">La slăbire, planul are 20 de minute de mers pe bandă înclinată la final. Pașii zilnici contează la fel de mult.</p>':''}</div>
+</div>
   <button class="btn full" data-act="startFree">Antrenament liber</button>
   <div class="card"><h3>Exerciții</h3><div class="chips" style="margin-bottom:6px">${EXG.map(g=>`<button class="chip ${S.libG===g[0]?'on':''}" data-libg="${g[0]}"><span class="dot" style="background:${g[2]};margin-right:6px"></span>${g[1]}</button>`).join('')}</div>
     ${EX.filter(e=>e.g===S.libG).map(e=>`<button class="exl" data-exinfo="${e.id}">${anim(e.id,1)}<div class="nm"><div>${esc(e.n)}</div><div class="small mut">${esc(e.m)}</div></div></button>`).join('')}</div>
   <div class="card"><h3>Istoric<span class="r">${hist.length} antrenamente</span></h3>
     ${hist.length?hist.slice(0,15).map(w=>`<div class="plan-day"><div class="sp"><div style="font-weight:600">${esc(dLong(w.date))}${w.plan?' · '+esc(w.plan):''}</div><div class="small mut">${w.ex.map(e=>esc(EXI[e.id]?EXI[e.id].n:e.id)).join(', ')}</div></div>
-      ${S.confirm===w.id?`<button class="btn sm" data-noconf>Nu</button><button class="btn sm acc" data-delwork="${w.id}">Șterge</button>`:`<button class="btn sm ghost" data-conf="${w.id}">✕</button>`}</div>`).join(''):'<div class="empty small">Antrenamentele terminate apar aici.</div>'}</div>`;
+      ${S.confirm===w.id?`<button class="btn sm" data-noconf>Nu</button><button class="btn sm acc" data-delwork="${w.id}">Șterge</button>`:`<button class="btn sm ghost" data-conf="${w.id}">✕</button>`}</div>`).join(''):'<div class="empty small">Niciun antrenament</div>'}</div>`;
 }
 function vWorkout(W){
   $('#top').innerHTML=`<h1>${esc(W.plan||'Antrenament')}</h1>`;
   const n=W.ex.reduce((a,e)=>a+e.s.filter(s=>s.ok).length,0);
   return `<div class="row small mut"><span>${esc(dLong(W.date))}</span><span class="sp"></span><span class="num" style="font-size:17px">${n} ${n===1?'set':'seturi'}</span></div>`+
   W.ex.map((e,i)=>{const E=EXI[e.id],L=lastFor(e.id,W.id),t=E.t;
-    const lastTxt=L?`Data trecută (${dTxt(L.w.date)}): <b>${L.e.s.filter(s=>s.ok).map(s=>t==='kg'&&+s.kg?fmt(s.kg)+'×'+s.r:t==='time'?s.r+' s':t==='cardio'?s.r+' min':(+s.kg?'+'+fmt(s.kg)+'kg×':'')+s.r).join(', ')}</b>`:'Prima dată pe acest exercițiu';
+    const lastTxt=L?`Data trecută (${dTxt(L.w.date)}): <b>${L.e.s.filter(s=>s.ok).map(s=>t==='kg'&&+s.kg?fmt(s.kg)+'×'+s.r:t==='time'?s.r+' s':t==='cardio'?s.r+' min':(+s.kg?'+'+fmt(s.kg)+'kg×':'')+s.r).join(', ')}</b>`:'—';
     const L1=t==='cardio'?'Minute':t==='time'?'Secunde':'Repetări',L0=t==='cardio'?'km':t==='bw'?'+ kg':'kg';
-    return `<div class="card ex"><div class="ex-h"><button data-exinfo="${e.id}" aria-label="Cum se face">${anim(e.id,1)}</button><div class="sp"><b>${esc(E.n)}</b>${e.target?`<div class="target">Țintă: ${e.s.length}×${esc(e.target)}</div>`:''}<div class="tiny mut">Atinge imaginea pentru execuție</div></div>
+    return `<div class="card ex"><div class="ex-h"><button data-exinfo="${e.id}" aria-label="Cum se face">${anim(e.id,1)}</button><div class="sp"><b>${esc(E.n)}</b>${e.target?`<div class="target">Țintă: ${e.s.length}×${esc(e.target)}</div>`:''}</div>
       ${S.confirm==='ex'+i?`<button class="btn sm acc" data-delex="${i}">Șterge</button>`:`<button class="x" data-conf="ex${i}" aria-label="Scoate exercițiul">✕</button>`}</div>
       <div class="last">${lastTxt}</div>
       <div class="lbl"><span>Set</span><span>${L0}</span><span></span><span>${L1}</span><span></span></div>
@@ -329,10 +328,10 @@ function vWorkout(W){
         ${pl?`<div class="plates">pe fiecare parte: ${pl.map(([p,c])=>`<i style="background:${c}"></i>${fmt(p,2)}`).join(' ')}</div>`:''}</div>`}).join('')}
       <div class="ex-f"><button class="btn sm" data-addset="${i}">+ Set</button>${e.s.length>1?`<button class="btn sm ghost" data-rmset="${i}">− Ultimul set</button>`:''}</div></div>`}).join('')+
   `<button class="btn full" data-act="addEx">+ Adaugă exercițiu</button>
-  <div class="card"><div class="small mut" style="margin-bottom:8px">Pauză între seturi (pornește singură când bifezi)</div><div class="chips">${[60,90,120,180].map(s=>`<button class="chip ${D.rest===s?'on':''}" data-rest="${s}">${s<120?s+' s':s/60+' min'}</button>`).join('')}</div></div>
-  <textarea id="wnote" rows="2" placeholder="Notițe: cum te-ai simțit, ce schimbi data viitoare">${esc(W.note||'')}</textarea>
+  <div class="card"><div class="small mut" style="margin-bottom:8px">Pauză</div><div class="chips">${[60,90,120,180].map(s=>`<button class="chip ${D.rest===s?'on':''}" data-rest="${s}">${s<120?s+' s':s/60+' min'}</button>`).join('')}</div></div>
+  <textarea id="wnote" rows="2" placeholder="Notițe">${esc(W.note||'')}</textarea>
   <button class="btn acc full" data-act="finish">Termină antrenamentul</button>
-  ${S.confirm==='cancelW'?`<div class="row"><span class="small sp">Renunți la antrenament? Seturile nu se salvează.</span><button class="btn sm" data-noconf>Nu</button><button class="btn sm acc" data-act="cancelW">Renunță</button></div>`:`<button class="btn ghost full" data-conf="cancelW">Renunță la antrenament</button>`}`;
+  ${S.confirm==='cancelW'?`<div class="row"><span class="small sp">Renunți la antrenament?</span><button class="btn sm" data-noconf>Nu</button><button class="btn sm acc" data-act="cancelW">Renunță</button></div>`:`<button class="btn ghost full" data-conf="cancelW">Renunță la antrenament</button>`}`;
 }
 function exInfoHTML(id){const E=EXI[id];const g=EXG.find(x=>x[0]===E.g);
   return `<div class="pn-h"><h2 style="font-size:21px">${esc(E.n)}</h2><button class="x" data-close>✕</button></div>
@@ -369,14 +368,13 @@ function vProg(){
     <div class="stat"><div class="v" style="color:${(P.goal==='slabire'&&cw<start)||(P.goal==='masa'&&cw>start)?'var(--ok)':'inherit'}">${cw-start>0?'+':''}${fmt(cw-start)}<small> kg</small></div><div class="k">de la început</div></div>
     <div class="stat"><div class="v">${wk}</div><div class="k">antrenamente în 4 săpt.</div></div></div>
   <div class="card"><h3>Greutate${P.target?`<span class="r">țintă ${fmt(P.target)} kg</span>`:''}</h3>
-    <div class="row" style="margin-bottom:8px"><input id="wadd" type="number" inputmode="decimal" placeholder="Greutatea de azi (kg)"><button class="btn acc" data-act="addWeight">Salvează</button></div>
-    <div id="chW"></div><p class="tiny mut" style="margin:6px 0 0">Punctele sunt cântăririle, linia e media pe 7 zile. Greutatea variază zilnic cu 1–2 kg din apă și mâncare; contează linia.</p></div>
+    <div class="row" style="margin-bottom:8px"><input id="wadd" type="number" inputmode="decimal" placeholder="kg"><button class="btn acc" data-act="addWeight">Salvează</button></div>
+    <div id="chW"></div></div>
   <div class="card"><h3>Calorii, ultimele 14 zile</h3><div id="chK"></div></div>
-  <div class="card"><h3>Forță pe exercițiu</h3>${exIds.length?`<select id="progEx">${exIds.map(id=>`<option value="${id}" ${id===S.progEx?'selected':''}>${esc(EXI[id]?EXI[id].n:id)}</option>`).join('')}</select><div id="chE" style="margin-top:10px"></div>
-    <p class="tiny mut" style="margin:6px 0 0">La exercițiile cu greutate: 1RM estimat (cât ai putea ridica o singură dată), din cel mai bun set. Formula Epley.</p>`:'<div class="empty small">După primele antrenamente vezi aici cum crește forța.</div>'}</div>`;
+  <div class="card"><h3>Forță<span class="r">1RM estimat</span></h3>${exIds.length?`<select id="progEx">${exIds.map(id=>`<option value="${id}" ${id===S.progEx?'selected':''}>${esc(EXI[id]?EXI[id].n:id)}</option>`).join('')}</select><div id="chE" style="margin-top:10px"></div>`:'<div class="empty small">Niciun antrenament</div>'}</div>`;
 }
 function lineChart(pts,opt){
-  const W=600,H=220,L=38,R=12,T=12,B=26;if(pts.length<2)return `<div class="empty small">${opt.empty||'Mai trebuie cel puțin încă o valoare ca să apară graficul.'}</div>`;
+  const W=600,H=220,L=38,R=12,T=12,B=26;if(pts.length<2)return `<div class="empty small">${opt.empty||'—'}</div>`;
   const xs=pts.map(p=>new Date(p.d+'T12:00').getTime());const x0=Math.min(...xs),x1=Math.max(...xs);
   const ys=pts.map(p=>p.v).concat(opt.extra||[]).concat(opt.line?opt.line.map(p=>p.v):[]);let lo=Math.min(...ys),hi=Math.max(...ys);const pd=Math.max(0.5,(hi-lo)*0.15);lo-=pd;hi+=pd;
   const X=t=>L+(W-L-R)*(t-x0)/((x1-x0)||1),Y=v=>T+(H-T-B)*(1-(v-lo)/((hi-lo)||1));
@@ -393,7 +391,7 @@ function lineChart(pts,opt){
 function drawCharts(){
   const P=D.profile;const w=[...D.weights].sort((a,b)=>a.d.localeCompare(b.d)).map(x=>({d:x.d,v:x.kg}));
   const avg=w.map(p=>{const s=w.filter(q=>q.d<=p.d&&q.d>addDays(p.d,-7));return{d:p.d,v:s.reduce((a,q)=>a+q.v,0)/s.length}});
-  const cw=$('#chW');if(cw)cw.innerHTML=lineChart(w,{col:'var(--acc)',line:avg,target:P.target,dotsOnly:true,empty:'Notează-ți greutatea câteva zile ca să vezi graficul.'});
+  const cw=$('#chW');if(cw)cw.innerHTML=lineChart(w,{col:'var(--acc)',line:avg,target:P.target,dotsOnly:true,empty:'—'});
   const ck=$('#chK');if(ck){const T=targets();const days=Array.from({length:14},(_,i)=>addDays(today(),i-13));const vals=days.map(d=>sumDay(d).k);const mx=Math.max(T.kcal*1.3,...vals);
     const W=600,H=170,L=8,B=24,bw=(W-L*2)/14;
     ck.innerHTML=`<svg class="chart" viewBox="0 0 ${W} ${H}"><line x1="0" x2="${W}" y1="${(H-B)*(1-T.kcal/mx)}" y2="${(H-B)*(1-T.kcal/mx)}" stroke="var(--ok)" stroke-dasharray="5 5"/>
